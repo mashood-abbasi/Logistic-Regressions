@@ -1,4 +1,5 @@
 import pandas as pd
+import os
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler, OneHotEncoder
 from sklearn.compose import ColumnTransformer
@@ -112,3 +113,4 @@ model_filename = "loan_approval_model.pkl"
 joblib.dump(model, model_filename)
 
 print(f"\nModel saved successfully as '{model_filename}'")
+
