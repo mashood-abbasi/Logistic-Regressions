@@ -9,20 +9,23 @@ from sklearn.metrics import accuracy_score, confusion_matrix, classification_rep
 import seaborn as sns
 import matplotlib.pyplot as plt
 import joblib
+import os
 
 st.set_page_config(page_title="Loan Approval Predictor", layout="wide")
 st.title("🏦 Loan Approval Prediction App")
 
-# 1️⃣ Upload Dataset
-st.subheader("Upload CSV Dataset")
-uploaded_file = st.file_uploader("Choose a CSV file", type="csv")
+# ✅ Load dataset from app folder
+st.subheader("Dataset")
+csv_path = os.path.join("DataSet", "loan_dataset.csv")  # CSV inside your Streamlit app folder
 
-if uploaded_file is not None:
-    df = pd.read_csv(uploaded_file)
+if not os.path.exists(csv_path):
+    st.error("Dataset not found! Make sure 'DataSet/loan_dataset.csv' is included in the app folder.")
+else:
+    df = pd.read_csv(csv_path)
     st.write("Dataset Preview:")
     st.dataframe(df.head())
 
-    # 2️⃣ Keep relevant columns
+    # Keep relevant columns
     columns_to_keep = [
         'applicant_name', 'gender', 'age', 'city', 'employment_type',
         'monthly_income_pkr', 'loan_amount_pkr', 'loan_tenure_months',
@@ -30,7 +33,7 @@ if uploaded_file is not None:
     ]
     df = df[columns_to_keep]
 
-    # 3️⃣ Split features and target
+    # Split features and target
     X = df.drop('approved', axis=1)
     y = df['approved']
 
@@ -38,7 +41,7 @@ if uploaded_file is not None:
     categorical_cols = X.select_dtypes(include=['object']).columns.tolist()
     numerical_cols = X.select_dtypes(include=['int64', 'float64']).columns.tolist()
 
-    # 4️⃣ Preprocessing pipelines
+    # Preprocessing pipelines
     num_pipeline = Pipeline([('scaler', StandardScaler())])
     cat_pipeline = Pipeline([('onehot', OneHotEncoder(handle_unknown='ignore'))])
     preprocessor = ColumnTransformer([
@@ -46,19 +49,19 @@ if uploaded_file is not None:
         ('cat', cat_pipeline, categorical_cols)
     ])
 
-    # 5️⃣ Train-test split
+    # Train-test split
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
-    # 6️⃣ Build complete pipeline
+    # Build complete pipeline
     model = Pipeline([
         ('preprocessor', preprocessor),
         ('classifier', LogisticRegression(max_iter=1000))
     ])
 
-    # 7️⃣ Train the model
+    # Train the model
     model.fit(X_train, y_train)
 
-    # 8️⃣ Evaluate
+    # Evaluate
     y_pred = model.predict(X_test)
     st.subheader("Model Performance")
     st.write(f"**Accuracy:** {accuracy_score(y_test, y_pred):.2f}")
@@ -74,7 +77,7 @@ if uploaded_file is not None:
     ax.set_ylabel('Actual')
     st.pyplot(fig)
 
-    # 9️⃣ User input for prediction
+    # User input for prediction
     st.subheader("Predict Loan Approval for a New Applicant")
     with st.form("loan_form"):
         applicant_name = st.text_input("Applicant Name")
@@ -109,7 +112,7 @@ if uploaded_file is not None:
             result = "Approved ✅" if prediction == 1 else "Rejected ❌"
             st.success(f"Loan Status for {applicant_name}: {result}")
 
-    # 10️⃣ Save the trained model
+    # Save the model
     model_filename = "loan_approval_model.pkl"
     joblib.dump(model, model_filename)
     st.info(f"Trained model saved as '{model_filename}'")
