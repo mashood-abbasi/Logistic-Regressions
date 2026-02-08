@@ -10,7 +10,8 @@ import matplotlib.pyplot as plt
 import joblib
 
 # 1️⃣ Load dataset
-df = pd.read_csv(r"D:\Self Learning\Python\StreamLit\DataSet\loan_dataset.csv")
+csv_path = os.path.join("DataSet", "loan_dataset.csv")
+df = pd.read_csv(csv_path)
 print("Dataset Preview:")
 print(df.head())
 
