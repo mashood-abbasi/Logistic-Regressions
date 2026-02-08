@@ -16,7 +16,7 @@ st.title("🏦 Loan Approval Prediction App")
 
 # ✅ Load dataset from app folder
 st.subheader("Dataset")
-csv_path = os.path.join("DataSet", "loan_dataset.csv")  # CSV inside your Streamlit app folder
+csv_path = os.path.join("loan_dataset.csv")  # CSV inside your Streamlit app folder
 
 if not os.path.exists(csv_path):
     st.error("Dataset not found! Make sure 'DataSet/loan_dataset.csv' is included in the app folder.")
@@ -116,3 +116,4 @@ else:
     model_filename = "loan_approval_model.pkl"
     joblib.dump(model, model_filename)
     st.info(f"Trained model saved as '{model_filename}'")
+
